@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: sudo apt update && sudo apt install -y cmake build-essential
+
+    - name: Install GoogleTest
+      run: sudo apt install -y libgtest-dev
+
+    - name: Configure CMake for banking
+      run: |
+        cd banking
+        cmake -B build -S .
+
+    - name: Build banking tests
+      run: |
+        cd banking/build
+        make
+
+    - name: Run tests
+      run: |
+        cd banking/build
+        ./test_banking
