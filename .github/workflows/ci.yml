@@ -43,18 +43,23 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v4
-    - name: Install CMake
-      run: choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System'
-    - name: Configure CMake
-      run: cmake -B build -S .
+
+    - name: Install vcpkg and GTest
+      run: |
+        git clone https://github.com/Microsoft/vcpkg.git
+        cd vcpkg
+        .\bootstrap-vcpkg.bat
+        .\vcpkg install gtest:x64-windows
+        cd ..
+
+    - name: Configure CMake with vcpkg
+      run: |
+        cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=vcpkg/scripts/buildsystems/vcpkg.cmake
+
     - name: Build
       run: cmake --build build --config Release
-    - name: Run tests (if available)
+
+    - name: Run tests
       run: |
-        if (Test-Path build/Release/tests.exe) {
-          ./build/Release/tests.exe
-        } elseif (Test-Path build/tests.exe) {
-          ./build/tests.exe
-        } else {
-          Write-Host "No tests found, skipping"
-        }
+        cd build
+        ctest --output-on-failure
