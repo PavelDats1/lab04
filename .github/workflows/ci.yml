@@ -8,29 +8,63 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  # ========== LINUX: GCC ==========
+  build-linux-gcc:
     runs-on: ubuntu-latest
-
+    strategy:
+      matrix:
+        compiler: [gcc]
     steps:
     - uses: actions/checkout@v4
 
     - name: Install dependencies
       run: sudo apt update && sudo apt install -y cmake build-essential
 
-    - name: Install GoogleTest
-      run: sudo apt install -y libgtest-dev
+    - name: Configure CMake
+      run: cmake -B build -S .
 
-    - name: Configure CMake for banking
-      run: |
-        cd banking
-        cmake -B build -S .
-
-    - name: Build banking tests
-      run: |
-        cd banking/build
-        make
+    - name: Build
+      run: cmake --build build
 
     - name: Run tests
+      run: ./build/test_banking
+
+  # ========== LINUX: CLANG ==========
+  build-linux-clang:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: sudo apt update && sudo apt install -y cmake build-essential clang
+
+    - name: Configure CMake with Clang
       run: |
-        cd banking/build
-        ./test_banking
+        CC=clang CXX=clang++ cmake -B build -S .
+      env:
+        CC: clang
+        CXX: clang++
+
+    - name: Build
+      run: cmake --build build
+
+    - name: Run tests
+      run: ./build/test_banking
+
+  # ========== WINDOWS: MSVC ==========
+  build-windows:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install CMake
+      run: choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System'
+
+    - name: Configure CMake
+      run: cmake -B build -S .
+
+    - name: Build
+      run: cmake --build build --config Release
+
+    - name: Run tests
+      run: ./build/Release/test_banking.exe
