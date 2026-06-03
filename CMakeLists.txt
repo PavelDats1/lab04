@@ -1,5 +1,4 @@
 cmake_policy(SET CMP0000 NEW)
-
 cmake_policy(VERSION 3.10)
 cmake_minimum_required(VERSION 3.10)
 project(lab03)
@@ -18,4 +17,8 @@ add_subdirectory(solver_application)
 if(BUILD_EXAMPLES)
     add_subdirectory(examples)
 endif()
-add_subdirectory(banking)
+
+# Добавляем banking только на Linux (где есть GTest)
+if(NOT WIN32)
+    add_subdirectory(banking)
+endif()
