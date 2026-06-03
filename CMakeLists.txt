@@ -1,3 +1,5 @@
+cmake_policy(SET CMP0000 NEW)
+
 cmake_policy(VERSION 3.10)
 cmake_minimum_required(VERSION 3.10)
 project(lab03)
