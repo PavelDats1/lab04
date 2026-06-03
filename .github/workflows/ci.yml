@@ -13,7 +13,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Install dependencies
-      run: sudo apt update && sudo apt install -y cmake build-essential
+      run: sudo apt update && sudo apt install -y cmake build-essential libgtest-dev
     - name: Configure CMake
       run: cmake -B build -S .
     - name: Build
@@ -28,7 +28,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Install dependencies
-      run: sudo apt update && sudo apt install -y cmake build-essential clang
+      run: sudo apt update && sudo apt install -y cmake build-essential clang libgtest-dev
     - name: Configure CMake with Clang
       run: |
         CC=clang CXX=clang++ cmake -B build -S .
@@ -43,8 +43,10 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v4
-    - name: Install CMake
-      run: choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System'
+    - name: Install CMake and GTest
+      run: |
+        choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System'
+        choco install googletest
     - name: Configure CMake
       run: cmake -B build -S .
     - name: Build
